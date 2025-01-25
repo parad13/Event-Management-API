@@ -1,0 +1,8 @@
+fastapi 
+uvicorn 
+sqlalchemy 
+pydantic[email] 
+python-multipart 
+pytest
+python-jose
+pip install passlib[bcrypt]
