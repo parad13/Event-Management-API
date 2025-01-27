@@ -3,11 +3,21 @@ from sqlalchemy.orm import relationship
 from .database import Base
 import enum
 
+
 class EventStatus(str, enum.Enum):
     SCHEDULED = 'scheduled'
     ONGOING = 'ongoing'
     COMPLETED = 'completed'
     CANCELED = 'canceled'
+
+
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
+    role = Column(String)
+
 
 class Event(Base):
     __tablename__ = "events"
@@ -20,8 +30,9 @@ class Event(Base):
     location = Column(String)
     max_attendees = Column(Integer)
     status = Column(Enum(EventStatus), default=EventStatus.SCHEDULED)
-    
+
     attendees = relationship("Attendee", back_populates="event")
+
 
 class Attendee(Base):
     __tablename__ = "attendees"
@@ -33,5 +44,5 @@ class Attendee(Base):
     phone_number = Column(String)
     event_id = Column(Integer, ForeignKey("events.event_id"))
     check_in_status = Column(Boolean, default=False)
-    
+
     event = relationship("Event", back_populates="attendees")
