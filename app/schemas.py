@@ -46,7 +46,7 @@ class User(UserBase):
     role: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class EventBase(BaseModel):
@@ -90,3 +90,8 @@ class Event(EventBase):
 
     class ConfigDict:
         from_attributes = True
+
+class EventList(BaseModel):
+    status: Optional[EventStatus] = None,
+    location: Optional[str] = None,
+    date: Optional[datetime] = None,
