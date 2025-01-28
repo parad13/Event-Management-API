@@ -75,8 +75,8 @@ async def update_event(
     
     for key, value in event_update.model_dump(exclude_unset=True).items():
         setattr(event, key, value)
-    
-    crud.update_event_status(db, event)
+   
+    crud.update_event_status(db, event.event_id)
     db.commit()
     db.refresh(event)
     return event

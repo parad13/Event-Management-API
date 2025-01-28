@@ -29,5 +29,3 @@ archive.zip
 # Ignore compiled Python files
 *.pyc
 __pycache__/
-*.__pycache__/
-*.pytest_cache

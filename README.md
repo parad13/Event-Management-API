@@ -1,4 +1,5 @@
 # Event management API
 
 ## To run the program
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload or
+runap.bat

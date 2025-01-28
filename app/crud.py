@@ -33,7 +33,7 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 def update_event_status(db: Session, event_id: int):
-    # Fetch the event by ID
+    # Fetch the event by event_id
     event = db.query(models.Event).filter(models.Event.event_id == event_id).first()
 
     if event is None:
@@ -82,7 +82,7 @@ def register_attendee(db: Session, event_id: int, attendee_data: schemas.Attende
     if len(event.attendees) >= event.max_attendees:
         raise HTTPException(status_code=400, detail="Max attendees limit reached")
 
-    # 🔹 Check if the attendee already exists
+    # Check if the attendee already exists
     existing_attendee = db.query(models.Attendee).filter_by(email=attendee_data.email, event_id=event_id).first()
     if existing_attendee:
         raise HTTPException(status_code=400, detail="Attendee with this email is already registered for this event")
@@ -103,7 +103,6 @@ def register_attendee(db: Session, event_id: int, attendee_data: schemas.Attende
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Database Integrity Error: Possible duplicate entry")
-
     return new_attendee
 
 def get_attendee_count(db: Session, event_id: int) -> int:

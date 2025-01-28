@@ -39,6 +39,7 @@ class AttendeesCheckIn(BaseModel):
 
 
 class AttendeeResponse(AttendeesCheckIn):
+    attendee_id: int
 
     class ConfigDict:
         from_attributes = True
