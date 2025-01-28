@@ -4,6 +4,9 @@ from typing import Optional, List
 from .models import EventStatus
 import pytz
 
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
+
 # Helper function to convert naive datetime to aware datetime
 
 
@@ -14,18 +17,31 @@ def make_aware(dt: datetime, timezone=pytz.UTC):
 
 
 class AttendeeBase(BaseModel):
-    pass
+    attendee_id:  Optional[int] = None 
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone_number: str
+
 
 class Attendee(AttendeeBase):
-    attendee_id: int
-    # event_id: int
     check_in_status: bool
-
     model_config = ConfigDict(from_attributes=True)
+
+
+class AttendeeCreate(AttendeeBase):
+    pass  # No additional fields required on creation
+
 
 class AttendeesCheckIn(BaseModel):
     event_id: int
-    check_in_status: Optional[bool] = None
+    check_in_status: bool
+
+
+class AttendeeResponse(AttendeesCheckIn):
+
+    class Config:
+        from_attributes = True
 
 
 class UserBase(BaseModel):

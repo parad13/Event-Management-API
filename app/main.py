@@ -3,6 +3,7 @@ from fastapi import FastAPI, Depends, HTTPException, File, UploadFile, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
+from typing import Optional
 import csv
 import io
 from .database import Base
@@ -80,25 +81,31 @@ async def update_event(
     db.refresh(event)
     return event
 
-@app.post("/event/{event_id}/attendees", response_model=schemas.Attendee)
+@app.post("/event/{event_id}/attendees", response_model=schemas.AttendeeResponse)
 async def register_attendee(
-    attendee: schemas.Attendee,
-    db: Session = Depends(get_db),
-    token: dict = Depends(auth.verify_token)
+    event_id: int,
+    attendee: schemas.AttendeeCreate,
+    db: Session = Depends(get_db)
 ):
     event = crud.get_event(db, event_id)
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
-    
+
     if len(event.attendees) >= event.max_attendees:
         raise HTTPException(status_code=400, detail="Max attendees limit reached")
-    
-    return crud.register_attendee(db, event_id, attendee)
+
+    new_attendee = crud.register_attendee(db, event_id, attendee)
+    if new_attendee == "FULL":
+        raise HTTPException(status_code=400, detail="Event is already full")
+
+    return new_attendee
+
 
 @app.put("/event/{event_id}/attendees/{attendee_id}/checkin", response_model=schemas.Attendee)
 async def checkin_attendee(
     event_id: int,
     attendee_id: int,
+    check_in_status: Optional[bool] = True,
     db: Session = Depends(get_db),
     token: dict = Depends(auth.verify_token)
 ):
@@ -110,7 +117,7 @@ async def checkin_attendee(
     if not attendee:
         raise HTTPException(status_code=404, detail="Attendee not found")
 
-    attendee.check_in_status = True
+    attendee.check_in_status = check_in_status
     db.commit()
     db.refresh(attendee)
     return attendee
@@ -124,50 +131,69 @@ async def bulk_checkin_attendees(
 ):
     content = await file.read()
     csv_reader = csv.DictReader(io.StringIO(content.decode("utf-8")))
+    
     attendees = []
+    failed_updates = []
+
     for row in csv_reader:
-        attendee_id = int(row["attendee_id"])
-        attendee = db.query(models.Attendee).filter(
-            models.Attendee.event_id == event_id,
-            models.Attendee.attendee_id == attendee_id
-        ).first()
-        if attendee:
-            attendee.check_in_status = True
-            db.commit()
-            db.refresh(attendee)
-            attendees.append(attendee)
+        try:
+            attendee_id = int(row["attendee_id"])
+            print(f"Processing attendee_id: {attendee_id}")
+
+            attendee = db.query(models.Attendee).filter(
+                models.Attendee.event_id == event_id,
+                models.Attendee.attendee_id == attendee_id
+            ).first()
+
+            if attendee:
+                attendee.check_in_status = True
+                db.commit()
+                db.refresh(attendee)
+                attendees.append(attendee)
+            else:
+                print(f"Attendee {attendee_id} not found for event {event_id}")
+                failed_updates.append(attendee_id)
+        except Exception as e:
+            print(f"Error processing attendee {row}: {e}")
+            failed_updates.append(row["attendee_id"])
+
+    if failed_updates:
+        print(f"Failed to update attendees: {failed_updates}")
+
     return attendees
+
 
 # Get list of the events
 @app.get("/events", response_model=List[schemas.Event])
 async def list_events(
-    eventList: schemas.EventList,
+    status: Optional[str] = None,
+    location: Optional[str] = None,
+    date: Optional[datetime] = None,
     db: Session = Depends(get_db)
 ):
+    """Fetch a list of events, optionally filtering by status, location, and date."""
+
     query = db.query(models.Event)
 
     if status:
         query = query.filter(models.Event.status == status)
-    if eventList.location:
-        query = query.filter(models.Event.location == eventList.location)
-    if eventList.date:
-        query = query.filter(models.Event.start_time <=
-                             eventList.date, models.Event.end_time >= eventList.date)
+    if location:
+        query = query.filter(models.Event.location == location)
+    if date:
+        query = query.filter(models.Event.start_time <= date, models.Event.end_time >= date)
 
-    events = query.all()
-    return events
+    return query.all()
 
 @app.get("/event/{event_id}/attendees", response_model=List[schemas.Attendee])
 async def list_attendees(
-    attendeesCheckIn: schemas.AttendeesCheckIn,
+    event_id: int,
+    check_in_status: Optional[bool] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(models.Attendee).filter(
-        models.Attendee.event_id == attendeesCheckIn.event_id)
 
-    if attendeesCheckIn.check_in_status is not None:
-        query = query.filter(
-            models.Attendee.check_in_status == attendeesCheckIn.check_in_status)
+    query = db.query(models.Attendee).filter(models.Attendee.event_id == event_id)
 
-    attendees = query.all()
-    return attendees
+    if check_in_status is not None:
+        query = query.filter(models.Attendee.check_in_status == check_in_status)
+
+    return query.all()
