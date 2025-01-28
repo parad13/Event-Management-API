@@ -40,7 +40,7 @@ class AttendeesCheckIn(BaseModel):
 
 class AttendeeResponse(AttendeesCheckIn):
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 

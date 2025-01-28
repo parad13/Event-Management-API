@@ -156,7 +156,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Event4\",\r\n    \"description\": \"Event4 description\",\r\n    \"start_time\": \"2025-01-29 15:08:42\",\r\n    \"end_time\": \"2025-01-29 21:08:42\",\r\n    \"location\": \"Pune\",\r\n    \"max_attendees\": 300\r\n\r\n}",
+					"raw": "{\r\n    \"name\": \"Event4\",\r\n    \"description\": \"Event4 description\",\r\n    \"start_time\": \"2025-01-29 15:08:42\",\r\n    \"end_time\": \"2025-01-29 21:08:42\",\r\n    \"location\": \"Pune\",\r\n    \"max_attendees\": 300\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -293,7 +293,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"attendee_id\": 1,\r\n    \"event_id\":2,\r\n    \"check_in_status\": true,\r\n    \"first_name\": \"Paras1\",\r\n    \"last_name\": \"W\",\r\n    \"email\": \"paras1@g.com\",\r\n    \"phone_number\": \"1234567890\"\r\n}",
+					"raw": "{\r\n    \"attendee_id\": 1,\r\n    \"first_name\": \"Paras4\",\r\n    \"last_name\": \"W\",\r\n    \"email\": \"paras4@g.com\",\r\n    \"phone_number\": \"1234567890\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -359,19 +359,10 @@
 						}
 					]
 				},
-				"method": "POST",
+				"method": "PUT",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Event1\",\r\n    \"description\": \"Event1 description\",\r\n    \"start_time\": \"2025-01-27 15:08:42\",\r\n    \"end_time\": \"2025-01-27 21:08:42\",\r\n    \"location\": \"Pune\",\r\n    \"max_attendees\": 300\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://localhost:8000/event/{{event_id}}/attendees/{{attendee_id}}/checkin",
+					"raw": "http://localhost:8000/event/1/attendees/4/checkin",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -379,10 +370,82 @@
 					"port": "8000",
 					"path": [
 						"event",
-						"{{event_id}}",
+						"1",
 						"attendees",
-						"{{attendee_id}}",
+						"4",
 						"checkin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bulk Checkin Attendee",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "password",
+							"value": "paras",
+							"type": "string"
+						},
+						{
+							"key": "accessTokenUrl",
+							"value": "{{access token url}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						},
+						{
+							"key": "client_authentication",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "grant_type",
+							"value": "password_credentials",
+							"type": "string"
+						},
+						{
+							"key": "authUrl",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/E:/Workspace/Code/Projects/Event management API/Event management API/attendees.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8000/event/1/attendees/bulk-checkin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"event",
+						"1",
+						"attendees",
+						"bulk-checkin"
 					]
 				}
 			},
@@ -431,17 +494,8 @@
 						}
 					]
 				},
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Event1\",\r\n    \"description\": \"Event1 description\",\r\n    \"start_time\": \"2025-01-27 15:08:42\",\r\n    \"end_time\": \"2025-01-27 21:08:42\",\r\n    \"location\": \"Pune\",\r\n    \"max_attendees\": 300\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "http://localhost:8000/events",
 					"protocol": "http",
@@ -499,19 +553,10 @@
 						}
 					]
 				},
-				"method": "POST",
+				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"Event1\",\r\n    \"description\": \"Event1 description\",\r\n    \"start_time\": \"2025-01-27 15:08:42\",\r\n    \"end_time\": \"2025-01-27 21:08:42\",\r\n    \"location\": \"Pune\",\r\n    \"max_attendees\": 300\r\n\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://localhost:8000/event/{{event_id}}}/attendees",
+					"raw": "http://localhost:8000/event/1/attendees",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -519,7 +564,7 @@
 					"port": "8000",
 					"path": [
 						"event",
-						"{{event_id}}}",
+						"1",
 						"attendees"
 					]
 				}

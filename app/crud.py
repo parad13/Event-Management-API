@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import List
 from . import models, schemas
 from .auth import get_password_hash
@@ -8,6 +8,7 @@ import pytz
 from datetime import datetime
 import pytz
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 
 # Helper function to convert naive datetime to aware datetime
