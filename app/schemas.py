@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from typing import Optional, List
 from .models import EventStatus
@@ -14,23 +14,18 @@ def make_aware(dt: datetime, timezone=pytz.UTC):
 
 
 class AttendeeBase(BaseModel):
-    first_name: str
-    last_name: str
-    email: EmailStr
-    phone_number: str
-
-
-class AttendeeCreate(AttendeeBase):
     pass
-
 
 class Attendee(AttendeeBase):
     attendee_id: int
-    event_id: int
+    # event_id: int
     check_in_status: bool
 
-    class ConfigDict:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+class AttendeesCheckIn(BaseModel):
+    event_id: int
+    check_in_status: Optional[bool] = None
 
 
 class UserBase(BaseModel):
@@ -41,11 +36,11 @@ class UserCreate(UserBase):
     password: str
 
 
-class User(UserBase):
+class Register(UserBase):
     id: int
     role: str
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
@@ -86,10 +81,10 @@ class EventUpdate(BaseModel):
 class Event(EventBase):
     event_id: int
     status: EventStatus
-    attendees: List[Attendee] = []
 
     class ConfigDict:
         from_attributes = True
+
 
 class EventList(BaseModel):
     status: Optional[EventStatus] = None,

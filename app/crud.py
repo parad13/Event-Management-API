@@ -60,9 +60,10 @@ def get_event(db: Session, event_id: int):
     return event
 
 
-def register_attendee(db: Session, event_id: int, attendee: schemas.AttendeeCreate):
+def register_attendee(db: Session, event_id: int, attendee: schemas.Attendee):
+    print("aaaaa")
     event = db.query(models.Event).filter(
-        models.Event.event_id == event_id).first()
+        models.Event.event_id == event_id)
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

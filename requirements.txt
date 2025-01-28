@@ -1,9 +1,9 @@
-fastapi 
-uvicorn 
-sqlalchemy 
-pydantic[email] 
-python-multipart 
-pytest
-python-jose
-pip install passlib[bcrypt]
-pytz
+fastapi==0.115.7
+uvicorn==0.34.0
+sqlalchemy==2.0.37
+pydantic[email]==2.10.6
+python-multipart==0.0.20
+pytest==8.3.4
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4
+pytz==2024.2
